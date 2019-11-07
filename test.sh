@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
-# for x = 1 -> 16
-#   copy test_cases/input{x}.txt to input.txt
-#   out/sched-sim
-#   check that output.txt matches test_cases/output{x}.txt
-#
-# delete input.txt
-# delete output.txt
+if command -v cmake &> /dev/null; then
+  echo "\e[33mBuilding...\e[0m"
+  cmake out
+fi
 
 for i in {1..16}; do
   cp "test_cases/input$i.txt" input.txt
@@ -16,3 +13,7 @@ done
 
 rm input.txt
 rm output.txt
+
+if ! command -v cmake &> /dev/null; then
+  echo "\e[31mCMake is not installed. \e[33mRemember to build before testing!\e[0m"
+fi
