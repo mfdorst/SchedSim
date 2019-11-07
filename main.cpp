@@ -15,34 +15,24 @@
 #include <string>
 #include <vector>
 
+template <class T>
+T read(std::istream &in);
+std::vector<Process> readProcessData(std::istream &in, unsigned processCount);
+
 int main()
 {
   std::ifstream in("input.txt");
   std::ofstream out("output.txt");
-  std::string algorithm;
-  unsigned timeQuantumLength = 0;
-  unsigned numProcesses = 0;
-  // Get the algorithm type, time quantum (if present), and number of processes.
-  in >> algorithm;
-  if (algorithm == "RR")
-  {
-    in >> timeQuantumLength;
-  }
-  in >> numProcesses;
-  // Get the numbers for each process
-  std::vector<Process> processes;
-  processes.reserve(numProcesses);
-  for (unsigned i = 0; i < numProcesses; ++i)
-  {
-    unsigned pid, arrivalTime, burstTime, priority;
-    in >> pid >> arrivalTime >> burstTime >> priority;
-    processes.emplace_back(pid, arrivalTime, burstTime, priority);
-  }
+  
+  auto algorithm = read<std::string>(in);
+  auto timeQuantum = algorithm == "RR" ? read<unsigned>(in) : 0;
+  auto processCount = read<unsigned>(in);
+  auto processes = readProcessData(in, processCount);
   // Print the algorithm type and time quantum (if present).
   out << algorithm;
-  if (timeQuantumLength > 0)
+  if (timeQuantum > 0)
   {
-    out << " " << timeQuantumLength;
+    out << " " << timeQuantum;
   }
   // DEBUG: Print the process info
   for (auto process : processes)
@@ -52,4 +42,27 @@ int main()
   }
   out << std::endl;
   return 0;
+}
+
+std::vector<Process> readProcessData(std::istream &in, const unsigned processCount)
+{
+  std::vector<Process> processes;
+  processes.reserve(processCount);
+  for (unsigned i = 0; i < processCount; ++i)
+  {
+    const auto pid = read<unsigned>(in);
+    const auto arrivalTime = read<unsigned>(in);
+    const auto burstTime = read<unsigned>(in);
+    const auto priority = read<unsigned>(in);
+    processes.emplace_back(pid, arrivalTime, burstTime, priority);
+  }
+  return processes;
+}
+
+template <class T>
+T read(std::istream &in)
+{
+  T t;
+  in >> t;
+  return t;
 }
