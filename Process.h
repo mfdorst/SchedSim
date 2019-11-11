@@ -12,13 +12,12 @@
 #pragma once
 
 class Process {
-  unsigned m_pid, m_arrivalTime, m_burstTime, m_priority;
+  unsigned m_pid, m_arrivalTime, m_priority;
 public:
   Process(unsigned pid, unsigned arrivalTime, unsigned burstTime, unsigned priority = 0)
-      : m_pid(pid), m_arrivalTime(arrivalTime), m_burstTime(burstTime), m_priority(priority) {}
-  
-  unsigned pid() { return m_pid; }
-  unsigned arrivalTime() { return m_arrivalTime; }
-  unsigned burstTime() { return m_burstTime; }
-  unsigned priority() { return m_priority; }
+      : m_pid(pid), m_arrivalTime(arrivalTime), burstTime(burstTime), m_priority(priority) {}
+  unsigned burstTime;
+  unsigned pid() const { return m_pid; }
+  unsigned arrivalTime() const { return m_arrivalTime; }
+  unsigned priority() const { return m_priority; }
 };

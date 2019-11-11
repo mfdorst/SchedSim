@@ -10,14 +10,16 @@
 //===--------------------------------------------------------------------------------------------------------------===//
 
 #include "Process.h"
+#include "RoundRobin.h"
 
 #include <fstream>
 #include <string>
 #include <vector>
 
 template <class T>
-T read(std::istream &in);
-std::vector<Process> readProcessData(std::istream &in, unsigned processCount);
+T read(std::istream& in);
+std::vector<Process> readProcessData(std::istream& in, unsigned processCount);
+void printSchedule(std::ostream& out, std::vector<ProcessAssignment> const& schedule);
 
 int main()
 {
@@ -28,23 +30,23 @@ int main()
   auto timeQuantum = algorithm == "RR" ? read<unsigned>(in) : 0;
   auto processCount = read<unsigned>(in);
   auto processes = readProcessData(in, processCount);
+  std::vector<ProcessAssignment> schedule;
+  if (algorithm == "RR")
+  {
+    schedule = roundRobin(processes, timeQuantum);
+  }
   // Print the algorithm type and time quantum (if present).
   out << algorithm;
   if (timeQuantum > 0)
   {
     out << " " << timeQuantum;
   }
-  // DEBUG: Print the process info
-  for (auto process : processes)
-  {
-    out << "\n" << process.pid() << " " << process.arrivalTime() << " " << process.burstTime() << " "
-        << process.priority();
-  }
-  out << std::endl;
+  out << "\n";
+  printSchedule(out, schedule);
   return 0;
 }
 
-std::vector<Process> readProcessData(std::istream &in, const unsigned processCount)
+std::vector<Process> readProcessData(std::istream& in, unsigned const processCount)
 {
   std::vector<Process> processes;
   processes.reserve(processCount);
@@ -60,9 +62,18 @@ std::vector<Process> readProcessData(std::istream &in, const unsigned processCou
 }
 
 template <class T>
-T read(std::istream &in)
+T read(std::istream& in)
 {
   T t;
   in >> t;
   return t;
+}
+
+void printSchedule(std::ostream& out, std::vector<ProcessAssignment> const& schedule)
+{
+  for (auto const assignment : schedule)
+  {
+    out << assignment.timePoint << "    " << assignment.pid << "\n";
+  }
+  out << std::flush;
 }
