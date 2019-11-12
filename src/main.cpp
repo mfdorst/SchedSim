@@ -9,34 +9,35 @@
 ///
 //===--------------------------------------------------------------------------------------------------------------===//
 
-#include "Process.h"
 #include "RoundRobin.h"
-#include "InputInfo.h"
+#include "ProcessData.h"
 
 #include <fstream>
 #include <string>
 #include <vector>
 
-void writeSchedule(std::string const& path, InputInfo const& info, std::vector<ProcessAssignment> const& schedule);
+void writeSchedule(std::string const& path, MetaData const& metaData, std::vector<ProcessAssignment> const& schedule);
 
 int main()
 {
-  InputInfo input = readInputInfo("input.txt");
+  MetaData metaData;
+  ProcessData processData;
+  std::tie(metaData, processData) = readProcessData("input.txt");
   
   std::vector<ProcessAssignment> schedule;
-  if (input.algorithm == "RR")
+  if (metaData.algorithm == "RR")
   {
-    schedule = roundRobin(input.processes, input.timeQuantum);
+    schedule = roundRobin(processData.processes, metaData.timeQuantum);
   }
-  writeSchedule("output.txt", input, schedule);
+  writeSchedule("output.txt", metaData, schedule);
   return 0;
 }
 
-void writeSchedule(std::string const& path, InputInfo const& info, std::vector<ProcessAssignment> const& schedule) {
+void writeSchedule(std::string const& path, MetaData const& metaData, ScheduleData const& schedule) {
   std::ofstream out(path);
-  out << info.algorithm;
-  if (info.timeQuantum > 0) {
-    out << " " << info.timeQuantum;
+  out << metaData.algorithm;
+  if (metaData.timeQuantum > 0) {
+    out << " " << metaData.timeQuantum;
   }
   out << "\n";
   for (auto const& assignment : schedule) {

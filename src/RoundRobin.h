@@ -11,7 +11,8 @@
 
 #pragma once
 
-#include "ProcessAssignment.h"
+#include "ScheduleData.h"
+#include "Process.h"
 
 #include <vector>
 #include <queue>
@@ -23,7 +24,7 @@
 /// \return The process scedule
 std::vector<ProcessAssignment> roundRobin(std::vector<Process>& processes, unsigned const timeQuantum)
 {
-  std::vector<ProcessAssignment> schedule;
+  ScheduleData schedule;
   unsigned time = 0;
   auto process_iter = processes.begin();
   std::vector<Process> waiting = { *process_iter++ };

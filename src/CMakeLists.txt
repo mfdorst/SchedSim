@@ -3,4 +3,4 @@ project(sched-sim)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(sched-sim main.cpp Process.h RoundRobin.h ProcessAssignment.h InputInfo.h ../test/OutputInfo.h)
+add_executable(sched-sim main.cpp Process.h RoundRobin.h ProcessAssignment.h ProcessData.h MetaData.h ScheduleData.h Util.h)

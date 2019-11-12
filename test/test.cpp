@@ -1,11 +1,11 @@
 // TODO: Add header
 
-#include "OutputInfo.h"
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <sstream>
+#include "../src/MetaData.h"
+#include "../src/ScheduleData.h"
 
 template <class T>
 std::string fail(std::string const& message, T const& expected, T const& actual);
@@ -23,31 +23,34 @@ int main()
     // Run sched-sim on the test input
     system("../src/sched-sim");
     // Read the output and compare it with the expected output
-    OutputInfo actual = readOutputInfo("output.txt");
-    OutputInfo expected = readOutputInfo("test_cases/output" + std::to_string(testNum) + ".txt");
+    MetaData actualMetaData;
+    MetaData expectedMetaData;
+    ScheduleData actualSchedule;
+    ScheduleData expectedSchedule;
+    std::tie(actualMetaData, actualSchedule) = readScheduleData("output.txt");
+    std::tie(expectedMetaData, expectedSchedule) =
+        readScheduleData("test_cases/output" + std::to_string(testNum) + ".txt");
     // Fail if there are differences between actual and expected
     std::vector<std::string> failures;
-    if (actual.algorithm != expected.algorithm)
+    if (actualMetaData.algorithm != expectedMetaData.algorithm)
     {
-      failures.push_back(fail("Wrong algorithm.", expected.algorithm, actual.algorithm));
+      failures.push_back(fail("Wrong algorithm.", expectedMetaData.algorithm, actualMetaData.algorithm));
     }
-    if (expected.algorithm == "RR" and actual.timeQuantum != expected.timeQuantum)
+    if (expectedMetaData.algorithm == "RR" and actualMetaData.timeQuantum != expectedMetaData.timeQuantum)
     {
-      failures.push_back(fail("Wrong time quantum.", expected.timeQuantum, actual.timeQuantum));
+      failures.push_back(fail("Wrong time quantum.", expectedMetaData.timeQuantum, expectedMetaData.timeQuantum));
     }
-    if (expected.processAssignments.size() != actual.processAssignments.size())
+    if (expectedSchedule.size() != actualSchedule.size())
     {
-      failures.push_back(fail("Incorrect number of CPU assignments.", expected.processAssignments.size(),
-                              actual.processAssignments.size()));
+      failures.push_back(fail("Incorrect number of CPU assignments.", expectedSchedule.size(), actualSchedule.size()));
     }
     else
     {
-      for (size_t pa = 0; pa < expected.processAssignments.size(); ++pa)
+      for (size_t i = 0; i < expectedSchedule.size(); ++i)
       {
-        if (expected.processAssignments[pa].timePoint != actual.processAssignments[pa].timePoint)
+        if (expectedSchedule[i].timePoint != actualSchedule[i].timePoint)
         {
-          failures.push_back(fail("Wrong time-point.", expected.processAssignments[pa].timePoint,
-                                  actual.processAssignments[pa].timePoint));
+          failures.push_back(fail("Wrong time-point.", expectedSchedule[i].timePoint, actualSchedule[i].timePoint));
         }
       }
     }
@@ -62,14 +65,16 @@ int main()
     }
     allFailures.push_back(failures);
   }
-  std::cout << "\n\033[32mPassed: " << testCount - failed << ". \033[31mFailed: " << failed << "." << std::endl;
+  std::cout << "\n\033[32mPassed: " << testCount - failed << "  \033[31mFailed: " << failed << std::endl;
   
   for (size_t i = 0; i < allFailures.size(); ++i)
   {
-    if (!allFailures[i].empty()) {
+    if (!allFailures[i].empty())
+    {
       std::cout << "Test " << i + 1 << " failed.\n";
     }
-    for (auto const& failureMessage : allFailures[i]) {
+    for (auto const& failureMessage : allFailures[i])
+    {
       std::cout << failureMessage << "\n";
     }
   }
