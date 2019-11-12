@@ -11,8 +11,8 @@
 
 #pragma once
 
+#include "ProcessData.h"
 #include "ScheduleData.h"
-#include "Process.h"
 
 #include <vector>
 #include <queue>

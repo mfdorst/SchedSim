@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ProcessAssignment.h"
 #include "MetaData.h"
 #include "Util.h"
 
@@ -10,6 +9,16 @@
 #include <tuple>
 #include <fstream>
 #include <string>
+
+/// Tracks a time at which a process will assigned to the CPU.
+struct ProcessAssignment {
+  /// The process ID
+  unsigned pid;
+  /// The time at which the process will be assigned to the CPU
+  unsigned timePoint;
+  
+  ProcessAssignment(unsigned pid, unsigned timePoint) : pid(pid), timePoint(timePoint) {}
+};
 
 typedef std::vector<ProcessAssignment> ScheduleData;
 
