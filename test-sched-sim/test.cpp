@@ -90,6 +90,8 @@ int main()
     }
   }
   std::cout << "\033[0m" << std::flush;
+  
+  system("rm input.txt output.txt");
 }
 
 /// Constructs a message which details the cause of a test failure
