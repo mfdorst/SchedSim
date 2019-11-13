@@ -16,24 +16,24 @@
 #include <string>
 #include <vector>
 
-void writeSchedule(std::string const& path, MetaData const& metaData, std::vector<ProcessAssignment> const& schedule);
+void writeSchedule(std::string const& path, ScheduleType const& metaData, std::vector<ProcessAssignment> const& schedule);
 
 int main()
 {
-  MetaData metaData;
+  ScheduleType metaData;
   ProcessData processData;
   std::tie(metaData, processData) = readProcessData("input.txt");
   
   std::vector<ProcessAssignment> schedule;
   if (metaData.algorithm == "RR")
   {
-    schedule = roundRobin(processData.processes, metaData.timeQuantum);
+    schedule = roundRobin(processData, metaData.timeQuantum);
   }
   writeSchedule("output.txt", metaData, schedule);
   return 0;
 }
 
-void writeSchedule(std::string const& path, MetaData const& metaData, ScheduleData const& schedule) {
+void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule) {
   std::ofstream out(path);
   out << metaData.algorithm;
   if (metaData.timeQuantum > 0) {

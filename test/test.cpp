@@ -1,15 +1,26 @@
-// TODO: Add header
+//===- test.cpp --- test-sched-sim: Test suite for sched-sim ------------------------------------------------------===//
+//
+// Author: Michael Dorst
+//
+//===--------------------------------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file is the entry point for `test-sched-sim` - the `sched-sim` test suite.
+///
+//===--------------------------------------------------------------------------------------------------------------===//
 
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <sstream>
-#include "../src/MetaData.h"
+#include "../src/ScheduleType.h"
 #include "../src/ScheduleData.h"
 
 template <class T>
 std::string fail(std::string const& message, T const& expected, T const& actual);
 
+/// Copies the input from each test case one at a time, runs `sched-sim` on each, tests the output to verify
+/// correctnes, and tells the user which tests fail.
 int main()
 {
   unsigned const testCount = 16;
@@ -23,22 +34,23 @@ int main()
     // Run sched-sim on the test input
     system("../src/sched-sim");
     // Read the output and compare it with the expected output
-    MetaData actualMetaData;
-    MetaData expectedMetaData;
+    ScheduleType actualScheduleType;
+    ScheduleType expectedScheduleType;
     ScheduleData actualSchedule;
     ScheduleData expectedSchedule;
-    std::tie(actualMetaData, actualSchedule) = readScheduleData("output.txt");
-    std::tie(expectedMetaData, expectedSchedule) =
+    std::tie(actualScheduleType, actualSchedule) = readScheduleData("output.txt");
+    std::tie(expectedScheduleType, expectedSchedule) =
         readScheduleData("test_cases/output" + std::to_string(testNum) + ".txt");
     // Fail if there are differences between actual and expected
     std::vector<std::string> failures;
-    if (actualMetaData.algorithm != expectedMetaData.algorithm)
+    if (actualScheduleType.algorithm != expectedScheduleType.algorithm)
     {
-      failures.push_back(fail("Wrong algorithm.", expectedMetaData.algorithm, actualMetaData.algorithm));
+      failures.push_back(fail("Wrong algorithm.", expectedScheduleType.algorithm, actualScheduleType.algorithm));
     }
-    if (expectedMetaData.algorithm == "RR" and actualMetaData.timeQuantum != expectedMetaData.timeQuantum)
+    if (expectedScheduleType.algorithm == "RR" and actualScheduleType.timeQuantum != expectedScheduleType.timeQuantum)
     {
-      failures.push_back(fail("Wrong time quantum.", expectedMetaData.timeQuantum, expectedMetaData.timeQuantum));
+      failures.push_back(
+          fail("Wrong time quantum.", expectedScheduleType.timeQuantum, expectedScheduleType.timeQuantum));
     }
     if (expectedSchedule.size() != actualSchedule.size())
     {
@@ -81,6 +93,7 @@ int main()
   std::cout << "\033[0m" << std::flush;
 }
 
+/// Constructs a message which details the cause of a test failure
 template <class T>
 std::string fail(std::string const& message, T const& expected, T const& actual)
 {

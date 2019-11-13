@@ -1,8 +1,17 @@
-// TODO: Add header
+//===- ScheduleData.h --- sched-sim: A CPU scheduling simulator -----------------------------------------*- C++ -*-===//
+//
+// Author: Michael Dorst
+//
+//===--------------------------------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains `ProcessAssignment` and `ScheduleData` types, as well as the `readScheduleData()` function.
+///
+//===--------------------------------------------------------------------------------------------------------------===//
 
 #pragma once
 
-#include "MetaData.h"
+#include "ScheduleType.h"
 #include "Util.h"
 
 #include <vector>
@@ -20,11 +29,13 @@ struct ProcessAssignment {
   ProcessAssignment(unsigned pid, unsigned timePoint) : pid(pid), timePoint(timePoint) {}
 };
 
+/// A collection of process assignments which represent a simulated CPU schedule
 typedef std::vector<ProcessAssignment> ScheduleData;
 
-std::tuple<MetaData, ScheduleData> readScheduleData(std::string const& path) {
+/// A test helper - reads the output of `sched-sim` so that the program results can be verified.
+std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path) {
   std::ifstream outputFile(path);
-  MetaData metaData;
+  ScheduleType metaData;
   ScheduleData scheduleData;
   metaData.algorithm = read<std::string>(outputFile);
   if (metaData.algorithm == "RR") {

@@ -19,10 +19,12 @@
 
 /// Simulates round robin scheduling
 ///
-/// \param processes The processes to be scheduled
-/// \param timeQuantum The length of the time quantum given to each process in a given round
+/// Modifies `processes`.
+///
+/// \param[in,out] processes The processes to be scheduled
+/// \param[in] timeQuantum The length of the time quantum given to each process in a given round
 /// \return The process scedule
-std::vector<ProcessAssignment> roundRobin(std::vector<Process>& processes, unsigned const timeQuantum)
+ScheduleData roundRobin(ProcessData& processes, unsigned const timeQuantum)
 {
   ScheduleData schedule;
   unsigned time = 0;
