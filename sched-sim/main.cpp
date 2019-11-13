@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-void writeSchedule(std::string const& path, ScheduleType const& metaData, std::vector<ProcessAssignment> const& schedule);
+void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule);
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
   ProcessData processData;
   std::tie(metaData, processData) = readProcessData("input.txt");
   
-  std::vector<ProcessAssignment> schedule;
+  ScheduleData schedule;
   if (metaData.algorithm == "RR")
   {
     schedule = roundRobin(processData, metaData.timeQuantum);

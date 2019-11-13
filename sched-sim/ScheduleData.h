@@ -14,7 +14,7 @@
 #include "ScheduleType.h"
 #include "Util.h"
 
-#include <vector>
+#include <deque>
 #include <tuple>
 #include <fstream>
 #include <string>
@@ -30,4 +30,4 @@ struct ProcessAssignment {
 };
 
 /// A collection of process assignments which represent a simulated CPU schedule
-typedef std::vector<ProcessAssignment> ScheduleData;
+typedef std::deque<ProcessAssignment> ScheduleData;
