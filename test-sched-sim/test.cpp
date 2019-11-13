@@ -1,4 +1,4 @@
-//===- test.cpp --- test-sched-sim: Test suite for sched-sim ------------------------------------------------------===//
+//===- test-sched-sim.cpp --- test-sched-sim-sched-sim: Test suite for sched-sim ------------------------------------------------------===//
 //
 // Author: Michael Dorst
 //
@@ -13,8 +13,8 @@
 #include <vector>
 #include <cstdlib>
 #include <sstream>
-#include "../src/ScheduleType.h"
-#include "../src/ScheduleData.h"
+#include "../sched-sim/ScheduleType.h"
+#include "../sched-sim/ScheduleData.h"
 
 template <class T>
 std::string fail(std::string const& message, T const& expected, T const& actual);
@@ -30,10 +30,10 @@ int main()
   allFailures.reserve(testCount);
   for (unsigned testNum = 1; testNum <= testCount; ++testNum)
   {
-    // Set up the test input
+    // Set up the test-sched-sim input
     system(("cp test_cases/input" + std::to_string(testNum) + ".txt input.txt").c_str());
-    // Run sched-sim on the test input
-    system("../src/sched-sim");
+    // Run sched-sim on the test-sched-sim input
+    system("../sched-sim/sched-sim");
     // Read the output and compare it with the expected output
     ScheduleType actualScheduleType, expectedScheduleType;
     ScheduleData actualSchedule, expectedSchedule;
