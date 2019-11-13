@@ -18,6 +18,7 @@
 
 template <class T>
 std::string fail(std::string const& message, T const& expected, T const& actual);
+std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path);
 
 /// Copies the input from each test case one at a time, runs `sched-sim` on each, tests the output to verify
 /// correctnes, and tells the user which tests fail.
@@ -34,10 +35,8 @@ int main()
     // Run sched-sim on the test input
     system("../src/sched-sim");
     // Read the output and compare it with the expected output
-    ScheduleType actualScheduleType;
-    ScheduleType expectedScheduleType;
-    ScheduleData actualSchedule;
-    ScheduleData expectedSchedule;
+    ScheduleType actualScheduleType, expectedScheduleType;
+    ScheduleData actualSchedule, expectedSchedule;
     std::tie(actualScheduleType, actualSchedule) = readScheduleData("output.txt");
     std::tie(expectedScheduleType, expectedSchedule) =
         readScheduleData("test_cases/output" + std::to_string(testNum) + ".txt");
@@ -100,4 +99,23 @@ std::string fail(std::string const& message, T const& expected, T const& actual)
   std::stringstream ss;
   ss << message << "\n" << "Expected: " << expected << "\nActual: " << actual << "\n";
   return ss.str();
+}
+
+/// Reads the output of `sched-sim` so that the program results can be verified.
+std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path) {
+  std::ifstream outputFile(path);
+  ScheduleType metaData;
+  ScheduleData scheduleData;
+  metaData.algorithm = read<std::string>(outputFile);
+  if (metaData.algorithm == "RR") {
+    metaData.timeQuantum = read<unsigned>(outputFile);
+  }
+  while (true) {
+    auto const scheduleTime = read<unsigned>(outputFile);
+// When EOF is read, break
+    if (!outputFile) break;
+    auto const pid = read<unsigned>(outputFile);
+    scheduleData.emplace_back(pid, scheduleTime);
+  }
+  return std::make_tuple(metaData, scheduleData);
 }
