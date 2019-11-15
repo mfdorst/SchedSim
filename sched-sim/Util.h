@@ -14,7 +14,7 @@
 /// Reads a single value from an input stream.
 ///
 /// \tparam T The type of data to read
-/// \param in[in,out] The input stream to read from
+/// \param in The input stream to read from
 /// \return The value read from the input stream
 template <class T>
 T read(std::istream& in)

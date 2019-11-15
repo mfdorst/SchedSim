@@ -5,7 +5,7 @@
 //===--------------------------------------------------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the `roundRobin()` funciton, which simulates round robin scheduling.
+/// This file contains the `roundRobin()` funciton, which simulates round-robin scheduling.
 ///
 //===--------------------------------------------------------------------------------------------------------------===//
 
@@ -17,18 +17,16 @@
 #include <vector>
 #include <queue>
 
-/// Simulates round robin scheduling
+/// Simulates round-robin scheduling
 ///
-/// Modifies `processes`.
-///
-/// \param[in,out] processes The processes to be scheduled
-/// \param[in] timeQuantum The length of the time quantum given to each process in a given round
+/// \param processData The processes to be scheduled
+/// \param timeQuantum The length of the time quantum given to each process in a given round
 /// \return The process scedule
-ScheduleData roundRobin(ProcessData& processes, unsigned const timeQuantum)
+ScheduleData roundRobin(ProcessData&& processData, unsigned const timeQuantum)
 {
   ScheduleData schedule;
   unsigned time = 0;
-  auto process_iter = processes.begin();
+  auto process_iter = processData.begin();
   std::vector<Process> waiting = { *process_iter++ };
   while (!waiting.empty())
   {
@@ -48,7 +46,7 @@ ScheduleData roundRobin(ProcessData& processes, unsigned const timeQuantum)
       working.burstTime = 0;
     }
     // Queue all the processes that arrived during the time quantum
-    while (process_iter != processes.end() and process_iter->arrivalTime() <= time)
+    while (process_iter != processData.end() and process_iter->arrivalTime() <= time)
     {
       waiting.push_back(*process_iter++);
     }

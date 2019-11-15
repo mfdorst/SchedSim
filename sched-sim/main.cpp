@@ -14,7 +14,6 @@
 
 #include <fstream>
 #include <string>
-#include <vector>
 
 void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule);
 
@@ -27,7 +26,7 @@ int main()
   ScheduleData schedule;
   if (metaData.algorithm == "RR")
   {
-    schedule = roundRobin(processData, metaData.timeQuantum);
+    schedule = roundRobin(std::move(processData), metaData.timeQuantum);
   }
   writeSchedule("output.txt", metaData, schedule);
   return 0;

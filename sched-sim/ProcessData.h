@@ -41,7 +41,7 @@ typedef std::vector<Process> ProcessData;
 
 /// Read algorithm and processes from the input file.
 ///
-/// \param path[in] The path to the input file
+/// \param[in] path The path to the input file
 /// \return The algorithm to be used to schedule, and the processes to be scheduled, as read from the input file
 std::tuple<ScheduleType, ProcessData> readProcessData(std::string const& path) {
   std::ifstream inputFile(path);
