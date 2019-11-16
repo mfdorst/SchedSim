@@ -15,7 +15,8 @@
 #include <fstream>
 #include <string>
 
-void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule);
+void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule,
+                   float const averageWaitingTime);
 
 int main()
 {
@@ -24,23 +25,28 @@ int main()
   std::tie(metaData, processData) = readProcessData("input.txt");
   
   ScheduleData schedule;
+  float averageWaitingTime = 0;
   if (metaData.algorithm == "RR")
   {
-    schedule = roundRobin(std::move(processData), metaData.timeQuantum);
+    std::tie(schedule, averageWaitingTime) = roundRobin(std::move(processData), metaData.timeQuantum);
   }
-  writeSchedule("output.txt", metaData, schedule);
+  writeSchedule("output.txt", metaData, schedule, averageWaitingTime);
   return 0;
 }
 
-void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule) {
+void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule,
+                   float const averageWaitingTime)
+{
   std::ofstream out(path);
   out << metaData.algorithm;
-  if (metaData.timeQuantum > 0) {
+  if (metaData.timeQuantum > 0)
+  {
     out << " " << metaData.timeQuantum;
   }
   out << "\n";
-  for (auto const& assignment : schedule) {
+  for (auto const& assignment : schedule)
+  {
     out << assignment.timePoint << "    " << assignment.pid << "\n";
   }
-  out << std::flush;
+  out << "AVG waiting time: " << averageWaitingTime << std::endl;
 }

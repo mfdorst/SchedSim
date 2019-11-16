@@ -22,12 +22,15 @@
 /// \param processData The processes to be scheduled
 /// \param timeQuantum The length of the time quantum given to each process in a given round
 /// \return The process scedule
-ScheduleData roundRobin(ProcessData&& processData, unsigned const timeQuantum)
+std::tuple<ScheduleData, float> roundRobin(ProcessData&& processData, unsigned const timeQuantum)
 {
   ScheduleData schedule;
   unsigned time = 0;
   auto process_iter = processData.begin();
   std::vector<Process> waiting = { *process_iter++ };
+  waiting.reserve(processData.size());
+  std::vector<unsigned> endingTimes;
+  endingTimes.reserve(processData.size());
   while (!waiting.empty())
   {
     // Select the next working process from the front of the queue
@@ -44,6 +47,8 @@ ScheduleData roundRobin(ProcessData&& processData, unsigned const timeQuantum)
     {
       time += working.burstTime;
       working.burstTime = 0;
+      // Process is done.
+      endingTimes.push_back(time);
     }
     // Queue all the processes that arrived during the time quantum
     while (process_iter != processData.end() and process_iter->arrivalTime() <= time)
@@ -55,5 +60,14 @@ ScheduleData roundRobin(ProcessData&& processData, unsigned const timeQuantum)
       waiting.push_back(working);
     }
   }
-  return schedule;
+  unsigned sumOfEndingTimes = 0, totalBurstTime = 0, sumOfArrivalTimes = 0;
+  for (size_t i = 0; i < processData.size(); ++i)
+  {
+    sumOfEndingTimes += endingTimes[i];
+    sumOfArrivalTimes += processData[i].arrivalTime();
+    totalBurstTime += processData[i].burstTime;
+  }
+  auto const totalWaitingTime = sumOfEndingTimes - sumOfArrivalTimes - totalBurstTime;
+  auto const averageWaitingTime = totalWaitingTime / (double) processData.size();
+  return std::make_tuple(schedule, averageWaitingTime);
 }
