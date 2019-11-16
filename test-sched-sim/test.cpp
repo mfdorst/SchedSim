@@ -13,13 +13,15 @@
 #include <vector>
 #include <cstdlib>
 #include <sstream>
-#include <fstream>
+#include <tuple>
+#include <regex>
+
 #include "../sched-sim/ScheduleType.h"
 #include "../sched-sim/ScheduleData.h"
 
 template <class T>
 std::string fail(std::string const& message, T const& expected, T const& actual);
-std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path);
+std::tuple<ScheduleType, ScheduleData, float> readScheduleData(std::string const& path);
 
 /// Copies the input from each test case one at a time, runs `sched-sim` on each, tests the output to verify
 /// correctnes, and tells the user which tests fail.
@@ -38,8 +40,9 @@ int main()
     // Read the output and compare it with the expected output
     ScheduleType actualScheduleType, expectedScheduleType;
     ScheduleData actualSchedule, expectedSchedule;
-    std::tie(actualScheduleType, actualSchedule) = readScheduleData("output.txt");
-    std::tie(expectedScheduleType, expectedSchedule) =
+    float actualAverageWaitingTime, expectedAverageWaitingTime;
+    std::tie(actualScheduleType, actualSchedule, actualAverageWaitingTime) = readScheduleData("output.txt");
+    std::tie(expectedScheduleType, expectedSchedule, expectedAverageWaitingTime) =
         readScheduleData("test_cases/output" + std::to_string(testNum) + ".txt");
     // Fail if there are differences between actual and expected
     std::vector<std::string> failures;
@@ -54,7 +57,7 @@ int main()
     }
     if (expectedSchedule.size() != actualSchedule.size())
     {
-      failures.push_back(fail("Incorrect number of CPU assignments.", expectedSchedule.size(), actualSchedule.size()));
+      failures.push_back(fail("Wrong number of CPU assignments.", expectedSchedule.size(), actualSchedule.size()));
     }
     else
     {
@@ -65,6 +68,10 @@ int main()
           failures.push_back(fail("Wrong time-point.", expectedSchedule[i].timePoint, actualSchedule[i].timePoint));
         }
       }
+    }
+    if (actualAverageWaitingTime != expectedAverageWaitingTime)
+    {
+      failures.push_back(fail("Wrong average waiting time.", expectedAverageWaitingTime, actualAverageWaitingTime));
     }
     if (!failures.empty())
     {
@@ -104,8 +111,10 @@ std::string fail(std::string const& message, T const& expected, T const& actual)
   return ss.str();
 }
 
+std::tuple<unsigned, bool> readIfUInt(std::istream& in);
+
 /// Reads the output of `sched-sim` so that the program results can be verified.
-std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path)
+std::tuple<ScheduleType, ScheduleData, float> readScheduleData(std::string const& path)
 {
   std::ifstream outputFile(path);
   ScheduleType metaData;
@@ -117,11 +126,33 @@ std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path)
   }
   while (true)
   {
-    auto const scheduleTime = read<unsigned>(outputFile);
-    // When EOF is read, break
-    if (!outputFile) break;
+    unsigned scheduleTime;
+    bool isNum;
+    // If the next thing in the file is a number, keep reading schedule data.
+    std::tie(scheduleTime, isNum) = readIfUInt(outputFile);
+    if (!isNum) break;
     auto const pid = read<unsigned>(outputFile);
     scheduleData.emplace_back(pid, scheduleTime);
   }
-  return std::make_tuple(metaData, scheduleData);
+  // End of file contains: AVG waiting time: <some real number>
+  // "AVG" has already been consumed. Consume next two words before reading number.
+  read<std::string>(outputFile); // Disacrd "waiting"
+  read<std::string>(outputFile); // Discard "time:"
+  auto const averageWaitingTime = read<float>(outputFile);
+  return std::make_tuple(metaData, scheduleData, averageWaitingTime);
+}
+
+std::tuple<unsigned, bool> readIfUInt(std::istream& in)
+{
+  std::string input;
+  std::regex uintPattern("[0-9]+");
+  in >> input;
+  if (std::regex_match(input, uintPattern))
+  {
+    return std::make_tuple(std::stod(input), true);
+  }
+  else
+  {
+    return std::make_tuple(0, false);
+  }
 }
