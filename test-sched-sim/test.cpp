@@ -13,6 +13,7 @@
 #include <vector>
 #include <cstdlib>
 #include <sstream>
+#include <fstream>
 #include "../sched-sim/ScheduleType.h"
 #include "../sched-sim/ScheduleData.h"
 
@@ -104,17 +105,20 @@ std::string fail(std::string const& message, T const& expected, T const& actual)
 }
 
 /// Reads the output of `sched-sim` so that the program results can be verified.
-std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path) {
+std::tuple<ScheduleType, ScheduleData> readScheduleData(std::string const& path)
+{
   std::ifstream outputFile(path);
   ScheduleType metaData;
   ScheduleData scheduleData;
   metaData.algorithm = read<std::string>(outputFile);
-  if (metaData.algorithm == "RR") {
+  if (metaData.algorithm == "RR")
+  {
     metaData.timeQuantum = read<unsigned>(outputFile);
   }
-  while (true) {
+  while (true)
+  {
     auto const scheduleTime = read<unsigned>(outputFile);
-// When EOF is read, break
+    // When EOF is read, break
     if (!outputFile) break;
     auto const pid = read<unsigned>(outputFile);
     scheduleData.emplace_back(pid, scheduleTime);
