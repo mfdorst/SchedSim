@@ -31,6 +31,8 @@ int main()
   unsigned failed = 0;
   std::vector<std::vector<std::string>> allFailures;
   allFailures.reserve(testCount);
+  std::vector<std::string> allAlgorithms;
+  allAlgorithms.reserve(testCount);
   for (unsigned testNum = 1; testNum <= testCount; ++testNum)
   {
     // Set up the test-sched-sim input
@@ -45,6 +47,7 @@ int main()
     std::tie(expectedScheduleType, expectedSchedule, expectedAverageWaitingTime) =
         readScheduleData("test_cases/output" + std::to_string(testNum) + ".txt");
     // Fail if there are differences between actual and expected
+    allAlgorithms.push_back(expectedScheduleType.algorithm);
     std::vector<std::string> failures;
     if (actualScheduleType.algorithm != expectedScheduleType.algorithm)
     {
@@ -90,7 +93,8 @@ int main()
   {
     if (!allFailures[i].empty())
     {
-      std::cout << "Test " << i + 1 << " failed.\n";
+      std::cout << "Test " << i + 1 << " failed.\n"
+      << "Algorithm: " << allAlgorithms[i] << "\n\n";
     }
     for (auto const& failureMessage : allFailures[i])
     {

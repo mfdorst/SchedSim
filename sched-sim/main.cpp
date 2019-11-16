@@ -10,13 +10,14 @@
 //===--------------------------------------------------------------------------------------------------------------===//
 
 #include "RoundRobin.h"
+#include "ShortestJobFirst.h"
 #include "ProcessData.h"
 
 #include <fstream>
 #include <string>
 
 void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule,
-                   float const averageWaitingTime);
+                   float averageWaitingTime);
 
 int main()
 {
@@ -29,6 +30,10 @@ int main()
   if (metaData.algorithm == "RR")
   {
     std::tie(schedule, averageWaitingTime) = roundRobin(std::move(processData), metaData.timeQuantum);
+  }
+  else if (metaData.algorithm == "SJF")
+  {
+    std::tie(schedule, averageWaitingTime) = shortestJobFirst(std::move(processData));
   }
   writeSchedule("output.txt", metaData, schedule, averageWaitingTime);
   return 0;

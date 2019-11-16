@@ -60,7 +60,7 @@ std::tuple<ScheduleData, float> roundRobin(ProcessData&& processData, unsigned c
       waiting.push_back(working);
     }
   }
-  unsigned sumOfEndingTimes = 0, totalBurstTime = 0, sumOfArrivalTimes = 0;
+  unsigned sumOfEndingTimes = 0, sumOfArrivalTimes = 0, totalBurstTime = 0;
   for (size_t i = 0; i < processData.size(); ++i)
   {
     sumOfEndingTimes += endingTimes[i];
