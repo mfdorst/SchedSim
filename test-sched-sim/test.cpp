@@ -70,6 +70,10 @@ int main()
         {
           failures.push_back(fail("Wrong time-point.", expectedSchedule[i].timePoint, actualSchedule[i].timePoint));
         }
+        if (expectedSchedule[i].pid != actualSchedule[i].pid)
+        {
+          failures.push_back(fail("Wrong process.", expectedSchedule[i].pid, actualSchedule[i].pid));
+        }
       }
     }
     if (actualAverageWaitingTime != expectedAverageWaitingTime)

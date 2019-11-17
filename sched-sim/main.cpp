@@ -12,10 +12,12 @@
 #include "RoundRobin.h"
 #include "ShortestJobFirst.h"
 #include "PrioritySchedulingWithoutPreemption.h"
+#include "PrioritySchedulingWithPreemption.h"
 #include "ProcessData.h"
 
 #include <fstream>
 #include <string>
+#include <iomanip>
 
 void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule,
                    float averageWaitingTime);
@@ -25,7 +27,7 @@ int main()
   ScheduleType scheduleType;
   ProcessData processData;
   std::tie(scheduleType, processData) = readProcessData("input.txt");
-  // Sor the processes by start time
+  // Sort the processes by start time
   std::sort(processData.begin(), processData.end(), [](Process a, Process b) {
     return a.arrivalTime() < b.arrivalTime();
   });
@@ -42,6 +44,10 @@ int main()
   else if (scheduleType.algorithm == "PR_noPREMP")
   {
     std::tie(schedule, averageWaitingTime) = prioritySchedulingWithoutPreemption(std::move(processData));
+  }
+  else if (scheduleType.algorithm == "PR_withPREMP")
+  {
+    std::tie(schedule, averageWaitingTime) = prioritySchedulingWithPreemption(std::move(processData));
   }
   writeSchedule("output.txt", scheduleType, schedule, averageWaitingTime);
   return 0;
@@ -61,5 +67,5 @@ void writeSchedule(std::string const& path, ScheduleType const& metaData, Schedu
   {
     out << assignment.timePoint << "    " << assignment.pid << "\n";
   }
-  out << "AVG waiting time: " << averageWaitingTime << std::endl;
+  out << "AVG waiting time: " << std::fixed << std::setprecision(2) << averageWaitingTime << std::endl;
 }

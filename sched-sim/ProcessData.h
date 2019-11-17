@@ -5,7 +5,8 @@
 //===--------------------------------------------------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the `Process` and `ProcessData` types, as well as the `readProcessData()` function.
+/// This file contains the `Process` and `ProcessData` types, as well as the `readProcessData()` function, and the
+/// `HighestPriority` comparator.
 ///
 //===--------------------------------------------------------------------------------------------------------------===//
 
@@ -34,6 +35,15 @@ public:
   unsigned arrivalTime() const { return m_arrivalTime; }
   /// Specifies how important it is for this process to complete quickly (lower number = higher priority)
   unsigned priority() const { return m_priority; }
+};
+
+/// Provides a comparator for the Process class, which compares two processes based on which has a higher priority
+/// (lower priority number).
+struct HighestPriority {
+  bool operator()(Process const& a, Process const& b) const
+  {
+    return a.priority() > b.priority();
+  }
 };
 
 /// A collection of processes - used to represent all processes specified in the input file

@@ -18,13 +18,6 @@
 #include <tuple>
 #include <queue>
 
-struct HighestPriority {
-  bool operator()(Process const& a, Process const& b) const
-  {
-    return a.priority() > b.priority();
-  }
-};
-
 std::tuple<ScheduleData, float> prioritySchedulingWithoutPreemption(ProcessData&& processData)
 {
   ScheduleData schedule;
