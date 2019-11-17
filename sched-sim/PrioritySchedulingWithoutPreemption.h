@@ -1,40 +1,36 @@
-//===- ShortestJobFirst.h --- sched-sim: A CPU scheduling simulator -------------------------------------*- C++ -*-===//
+//===- PrioritySchedulingWithoutPreemption.h --- sched-sim: A CPU scheduling simulator ------------------*- C++ -*-===//
 //
 // Author: Michael Dorst
 //
 //===--------------------------------------------------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the `shortestJobFirst()` funciton, which simulates shortest-job-first scheduling.
+/// This file contains the `prioritySchedulingWithoutPreemption()` funciton, which simulates priority scheduling without
+/// preemption.
 ///
 //===--------------------------------------------------------------------------------------------------------------===//
 
 #pragma once
 
-#include "ScheduleData.h"
 #include "ProcessData.h"
+#include "ScheduleData.h"
 
 #include <tuple>
 #include <queue>
 
-struct ShortestProcess
-{
+struct HighestPriority {
   bool operator()(Process const& a, Process const& b) const
   {
-    return a.burstTime > b.burstTime;
+    return a.priority() > b.priority();
   }
 };
 
-/// Simulates shortest-job-first scheduling
-///
-/// \param processes The processes to be scheduled
-/// \return The process schedule and the average waiting time
-std::tuple<ScheduleData, float> shortestJobFirst(ProcessData&& processData)
+std::tuple<ScheduleData, float> prioritySchedulingWithoutPreemption(ProcessData&& processData)
 {
   ScheduleData schedule;
   unsigned time = 0;
   auto process_iter = processData.begin();
-  std::priority_queue<Process, std::vector<Process>, ShortestProcess> waiting;
+  std::priority_queue<Process, std::vector<Process>, HighestPriority> waiting;
   std::vector<unsigned> endingTimes;
   endingTimes.reserve(processData.size());
   while (process_iter != processData.end() or !waiting.empty())

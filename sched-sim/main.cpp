@@ -11,6 +11,7 @@
 
 #include "RoundRobin.h"
 #include "ShortestJobFirst.h"
+#include "PrioritySchedulingWithoutPreemption.h"
 #include "ProcessData.h"
 
 #include <fstream>
@@ -21,21 +22,28 @@ void writeSchedule(std::string const& path, ScheduleType const& metaData, Schedu
 
 int main()
 {
-  ScheduleType metaData;
+  ScheduleType scheduleType;
   ProcessData processData;
-  std::tie(metaData, processData) = readProcessData("input.txt");
-  
+  std::tie(scheduleType, processData) = readProcessData("input.txt");
+  // Sor the processes by start time
+  std::sort(processData.begin(), processData.end(), [](Process a, Process b) {
+    return a.arrivalTime() < b.arrivalTime();
+  });
   ScheduleData schedule;
   float averageWaitingTime = 0;
-  if (metaData.algorithm == "RR")
+  if (scheduleType.algorithm == "RR")
   {
-    std::tie(schedule, averageWaitingTime) = roundRobin(std::move(processData), metaData.timeQuantum);
+    std::tie(schedule, averageWaitingTime) = roundRobin(std::move(processData), scheduleType.timeQuantum);
   }
-  else if (metaData.algorithm == "SJF")
+  else if (scheduleType.algorithm == "SJF")
   {
     std::tie(schedule, averageWaitingTime) = shortestJobFirst(std::move(processData));
   }
-  writeSchedule("output.txt", metaData, schedule, averageWaitingTime);
+  else if (scheduleType.algorithm == "PR_noPREMP")
+  {
+    std::tie(schedule, averageWaitingTime) = prioritySchedulingWithoutPreemption(std::move(processData));
+  }
+  writeSchedule("output.txt", scheduleType, schedule, averageWaitingTime);
   return 0;
 }
 
