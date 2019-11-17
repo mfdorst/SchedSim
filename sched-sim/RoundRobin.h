@@ -69,5 +69,5 @@ std::tuple<ScheduleData, float> roundRobin(ProcessData&& processData, unsigned c
   }
   auto const totalWaitingTime = sumOfEndingTimes - sumOfArrivalTimes - totalBurstTime;
   auto const averageWaitingTime = totalWaitingTime / (double) processData.size();
-  return std::make_tuple(schedule, averageWaitingTime);
+  return std::tuple<ScheduleData, float>(schedule, averageWaitingTime);
 }

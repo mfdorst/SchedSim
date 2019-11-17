@@ -63,10 +63,10 @@ std::tuple<ScheduleData, float> prioritySchedulingWithPreemption(ProcessData&& p
     // The working process is not finished. Queue it.
     waiting.push(working);
   }
-  for (auto & process : processData)
+  for (size_t i = 0; i < processData.size(); ++i)
   {
-    sumOfArrivalTimes += process.arrivalTime();
-    totalBurstTime += process.burstTime;
+    sumOfArrivalTimes += processData[i].arrivalTime();
+    totalBurstTime += processData[i].burstTime;
   }
   unsigned sumOfEndingTimes = 0;
   for (size_t i = 0; i < processData.size(); ++i)
@@ -75,5 +75,5 @@ std::tuple<ScheduleData, float> prioritySchedulingWithPreemption(ProcessData&& p
   }
   auto const totalWaitingTime = sumOfEndingTimes - sumOfArrivalTimes - totalBurstTime;
   auto const averageWaitingTime = totalWaitingTime / (double) processData.size();
-  return std::make_tuple(schedule, averageWaitingTime);
+  return std::tuple<ScheduleData, float>(schedule, averageWaitingTime);
 }

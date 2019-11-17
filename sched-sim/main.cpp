@@ -18,9 +18,14 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <algorithm>
 
 void writeSchedule(std::string const& path, ScheduleType const& metaData, ScheduleData const& schedule,
                    float averageWaitingTime);
+
+bool compareProcess(Process a, Process b) {
+  return a.arrivalTime() < b.arrivalTime();
+}
 
 int main()
 {
@@ -28,9 +33,7 @@ int main()
   ProcessData processData;
   std::tie(scheduleType, processData) = readProcessData("input.txt");
   // Sort the processes by start time
-  std::sort(processData.begin(), processData.end(), [](Process a, Process b) {
-    return a.arrivalTime() < b.arrivalTime();
-  });
+  std::sort(processData.begin(), processData.end(), compareProcess);
   ScheduleData schedule;
   float averageWaitingTime = 0;
   if (scheduleType.algorithm == "RR")
@@ -63,9 +66,8 @@ void writeSchedule(std::string const& path, ScheduleType const& metaData, Schedu
     out << " " << metaData.timeQuantum;
   }
   out << "\n";
-  for (auto const& assignment : schedule)
-  {
-    out << assignment.timePoint << "    " << assignment.pid << "\n";
+  for (size_t i = 0; i < schedule.size(); ++i) {
+    out << schedule[i].timePoint << "    " << schedule[i].pid << "\n";
   }
   out << "AVG waiting time: " << std::fixed << std::setprecision(2) << averageWaitingTime << std::endl;
 }
